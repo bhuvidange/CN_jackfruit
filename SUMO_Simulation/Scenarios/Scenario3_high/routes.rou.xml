@@ -1,0 +1,28 @@
+<routes>
+
+<vType id="car" accel="1.0" decel="4.5" sigma="0.5" length="5"/>
+
+<route id="north_south" edges="north_in south_out"/>
+<route id="south_north" edges="south_in north_out"/>
+<route id="east_west" edges="east_in west_out"/>
+<route id="west_east" edges="west_in east_out"/>
+
+<!-- HIGH TRAFFIC -->
+<flow id="f1" route="north_south" begin="0" end="100" probability="0.30"/>
+<flow id="f2" route="south_north" begin="0" end="100" probability="0.30"/>
+<flow id="f3" route="east_west" begin="0" end="100" probability="0.30"/>
+<flow id="f4" route="west_east" begin="0" end="100" probability="0.30"/>
+
+<!-- VERY HIGH TRAFFIC -->
+<flow id="f5" route="north_south" begin="100" end="200" probability="0.45"/>
+<flow id="f6" route="south_north" begin="100" end="200" probability="0.45"/>
+<flow id="f7" route="east_west" begin="100" end="200" probability="0.45"/>
+<flow id="f8" route="west_east" begin="100" end="200" probability="0.45"/>
+
+<!-- MEDIUM TRAFFIC -->
+<flow id="f9" route="north_south" begin="200" end="300" probability="0.20"/>
+<flow id="f10" route="south_north" begin="200" end="300" probability="0.20"/>
+<flow id="f11" route="east_west" begin="200" end="300" probability="0.20"/>
+<flow id="f12" route="west_east" begin="200" end="300" probability="0.20"/>
+
+</routes>
