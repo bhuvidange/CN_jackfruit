@@ -37,6 +37,8 @@ signal_label.pack()
 status_label = tk.Label(root, text="Status: NORMAL", font=("Arial",14))
 status_label.pack(pady=10)
 
+# Determines traffic condition based on queue length and waiting time
+
 def analyze(queue, wait):
     if queue < 5 and wait < 10:
         return "NORMAL"
@@ -44,6 +46,7 @@ def analyze(queue, wait):
         return "MODERATE"
     else:
         return "SEVERE"
+        # Determines traffic condition based on queue length and waiting time
 
 def listen():
     while True:
