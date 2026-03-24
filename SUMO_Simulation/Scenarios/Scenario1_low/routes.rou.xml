@@ -1,11 +1,12 @@
 <routes>
 
-<vType id="car" accel="1.0" decel="4.5" sigma="0.5" length="5"/>
+<vType id="car" accel="1.0" decel="4.5" sigma="0.5" length="5"/>    <!-- Define vehicle type with specific parameters -->
+<!-- sigma is the standard deviation of the driver's imperfection -->
 
-<route id="north_south" edges="north_in south_out"/>
-<route id="south_north" edges="south_in north_out"/>
-<route id="east_west" edges="east_in west_out"/>
-<route id="west_east" edges="west_in east_out"/>
+<route id="north_south" edges="north_in south_out"/>    <!-- Define route from north to south -->
+<route id="south_north" edges="south_in north_out"/>    <!-- Define route from south to north -->
+<route id="east_west" edges="east_in west_out"/>    <!-- Define route from east to west -->
+<route id="west_east" edges="west_in east_out"/>    <!-- Define route from west to east -->
 
 <!-- HIGH TRAFFIC -->
 <flow id="f1" route="north_south" begin="0" end="100" probability="0.35"/>
