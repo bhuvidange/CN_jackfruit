@@ -9,7 +9,7 @@ SEND_INTERVAL = 1.0
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-with open("simulation_data_1.json", "r") as f:
+with open("scenario1_output.json", "r") as f:
     records = json.load(f)
 
 for record in records:

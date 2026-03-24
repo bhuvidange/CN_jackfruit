@@ -1,18 +1,16 @@
-
 import socket
-import json
 import threading
 import tkinter as tk
 
-SERVER_IP = "0.0.0.0"
-SERVER_PORT = 5005
+SERVER_IP = "127.0.0.1"
+SERVER_PORT = 9999
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((SERVER_IP, SERVER_PORT))
 
 root = tk.Tk()
 root.title("Smart Traffic Monitoring System")
-root.geometry("400x300")
+root.geometry("450x320")
 
 title = tk.Label(root, text="Traffic Monitoring Dashboard", font=("Arial",16))
 title.pack(pady=10)
@@ -26,50 +24,58 @@ queue_label.pack()
 wait_label = tk.Label(root, text="Waiting Time: 0", font=("Arial",12))
 wait_label.pack()
 
+signal_label = tk.Label(root, text="Signal: -", font=("Arial",12))
+signal_label.pack()
+
 status_label = tk.Label(root, text="Status: NORMAL", font=("Arial",14))
 status_label.pack(pady=10)
 
 def analyze(queue, wait):
-
     if queue < 5 and wait < 10:
         return "NORMAL"
-
     elif queue < 15:
         return "MODERATE"
-
     else:
         return "SEVERE"
 
 def listen():
-
     while True:
-
         data, addr = sock.recvfrom(65535)
-        packet = json.loads(data.decode())
 
-        north = packet["north_queue"]
-        south = packet["south_queue"]
-        east = packet["east_queue"]
-        west = packet["west_queue"]
+        # 🔹 Decode CSV message
+        message = data.decode()
+        parts = message.split(",")
+
+        # 🔹 Parse values
+        timestamp = parts[0]
+        simulation_time = float(parts[1])
+        vehicle_count = int(parts[2])
+        north = int(parts[3])
+        south = int(parts[4])
+        east = int(parts[5])
+        west = int(parts[6])
+        waiting_time = float(parts[7])
+        signal_state = parts[8]
 
         total_queue = north + south + east + west
-        waiting_time = packet["waiting_time"]
-
         status = analyze(total_queue, waiting_time)
 
-        vehicle_label.config(text=f"Vehicles: {packet['vehicle_count']}")
+        # 🔹 Update UI
+        vehicle_label.config(text=f"Vehicles: {vehicle_count}")
         queue_label.config(text=f"Queue Length: {total_queue}")
         wait_label.config(text=f"Waiting Time: {waiting_time}")
+        signal_label.config(text=f"Signal: {signal_state}")
 
         if status == "NORMAL":
             status_label.config(text="🟢 NORMAL", fg="green")
-
         elif status == "MODERATE":
             status_label.config(text="🟡 MODERATE", fg="orange")
-
         else:
             status_label.config(text="🔴 SEVERE", fg="red")
 
+        print("Received:", message)
+
 thread = threading.Thread(target=listen, daemon=True)
 thread.start()
+
 root.mainloop()
