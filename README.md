@@ -31,12 +31,20 @@ Access simulation data at each time step
 
 
 Running the Project
-Open a terminal in the project directory.
-Run the simulation and start data extraction using the provided Python script.
-The script will:
-Launch the SUMO simulation
-Extract real-time traffic data using TraCI
-Save data to a JSON file and/or transmit it via UDP
+
+The project involves three main components running in sequence:
+
+Run the SUMO Simulation
+Start the traffic simulation first using the Python script.
+This launches SUMO and begins extracting real-time traffic data using TraCI.
+Run the Server
+Start the server script to receive and process traffic data sent via UDP.
+The server listens for incoming data from the simulation.
+Run the Client
+Start the client script to receive data from the server.
+The client can display or store real-time traffic information for monitoring purposes.
+
+Important: Run the components in this order: Simulation → Server → Client to ensure smooth data transmission.
     
 
 Traffic metrics extracted:
