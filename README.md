@@ -43,6 +43,6 @@ It is used to read live data such as vehicle count, queue lengths, and signal st
 * **NS_GREEN** → North-South flow active  
 * **EW_GREEN** → East-West flow active  
 * **YELLOW** → Transition phase  
-* **ALL_RED** → All signals stopped  
+* **ALL_RED** → All signals stopped     
 
 The system uses UDP socket programming to create a fast congestion monitoring system that tracks changing congestion rates throughout the simulation.
