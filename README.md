@@ -1,6 +1,6 @@
 # **CN Jackfruit – Smart Traffic Monitoring System**
 
-The Smart Traffic Monitoring System is a network-based solution that simulates real-world traffic conditions, extracts real-time data, and transmits it to a central system for analysis.
+The Smart Traffic Monitoring System is a network-based solution that simulates real-world traffic conditions, extracts real-time data, and sends it to a central system for analysis.
 
 This project combines multiple components to create a complete traffic monitoring pipeline:
 
