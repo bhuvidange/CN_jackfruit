@@ -4,33 +4,33 @@
 # and sends it over the network at regular intervals (1 second). This simulates
 # real-time traffic data streaming from a traffic system to a monitoring server.
 
-import socket      # Used for network communication
-import time        # Used to add delay between sending messages
-import json        # Used to read data from JSON file
-from data_generator import generate_data   # Function to process each record
+import socket   # Used for network communication
+import time     # Used to create delays between sending packets
+import json     # Used to read data from JSON file
+from data_generator import generate_data    # Function to process each record
 
 # Server configuration (IP address and port number)
 SERVER_IP = "127.0.0.1"
 SERVER_PORT = 9999
-
-# Time gap between sending each message (in seconds)
-SEND_INTERVAL = 1.0
+SEND_INTERVAL = 0.1  # Time gap between sending each message (in seconds)
 
 # Create a UDP socket
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 # Open and load traffic data from JSON file
-with open("scenario1_output.json", "r") as f:
+with open("Tjunc.json", "r") as f:
     records = json.load(f)
 
-# Loop through each record in the JSON file
+packet_id = 0  # To keep packet count for tracking and loss detection
+
+# Loop through each record in the JSON file, process it, and send to the server
 for record in records:
-    
-    # Generate structured data from raw record
+     # Generate structured data from raw record
     data = generate_data(record)
-    
+
     # Convert data into a comma-separated string message
     message = (
+        f"{packet_id},"
         f"{data['timestamp']},"          # Current timestamp
         f"{data['simulation_time']},"    # Simulation time
         f"{data['vehicle_count']},"      # Total number of vehicles
@@ -39,15 +39,14 @@ for record in records:
         f"{data['east_queue']},"         # Vehicles waiting in east direction
         f"{data['west_queue']},"         # Vehicles waiting in west direction
         f"{data['waiting_time']},"       # Total waiting time
-        f"{data['signal_state']}"        # Current traffic signal state
-    )
-    
-    # Send the message to the server
+        f"{data['signal_state']}")        # Current traffic signal state
+
+    print("Sent:", message) # Print the message being sent for debugging purposes
+
     client_socket.sendto(message.encode(), (SERVER_IP, SERVER_PORT))
-    
-    # Print the sent message (for debugging/monitoring)
-    print("Sent:", message)
-    
+
+    packet_id += 1  # Increment packet ID for the next message
+
     # Wait for specified interval before sending next data
     time.sleep(SEND_INTERVAL)
 

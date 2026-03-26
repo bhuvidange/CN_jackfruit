@@ -15,9 +15,17 @@ SERVER_PORT = 9999
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((SERVER_IP, SERVER_PORT))
 
+print("Server UP AND RUNNING...")
+
+#To Track lost packets and calculate loss rate
+expected_packet = 0
+lost_packets = 0
+total_received = 0
+
+#UI Tkinter Setup
 root = tk.Tk()
 root.title("Smart Traffic Monitoring System")
-root.geometry("450x320")
+root.geometry("450x380")
 
 title = tk.Label(root, text="Traffic Monitoring Dashboard", font=("Arial",16))
 title.pack(pady=10)
@@ -37,6 +45,12 @@ signal_label.pack()
 status_label = tk.Label(root, text="Status: NORMAL", font=("Arial",14))
 status_label.pack(pady=10)
 
+loss_label = tk.Label(root, text="Packets Lost: 0", font=("Arial",12))
+loss_label.pack()
+
+loss_rate_label = tk.Label(root, text="Loss %: 0.0", font=("Arial",12))
+loss_rate_label.pack()
+
 # Determines traffic condition based on queue length and waiting time
 
 def analyze(queue, wait):
@@ -46,45 +60,72 @@ def analyze(queue, wait):
         return "MODERATE"
     else:
         return "SEVERE"
-        # Determines traffic condition based on queue length and waiting time
+
+def update_ui(vehicle_count, total_queue, waiting_time, signal_state, status, loss_rate):
+    vehicle_label.config(text=f"Vehicles: {vehicle_count}")
+    queue_label.config(text=f"Queue Length: {total_queue}")
+    wait_label.config(text=f"Waiting Time: {waiting_time:.2f}")
+    signal_label.config(text=f"Signal: {signal_state}")
+    loss_label.config(text=f"Packets Lost: {lost_packets}")
+    loss_rate_label.config(text=f"Loss %: {loss_rate:.2f}")
+
+    if status == "NORMAL":
+        status_label.config(text="🟢 NORMAL", fg="green")
+    elif status == "MODERATE":
+        status_label.config(text="🟡 MODERATE", fg="orange")
+    else:
+        status_label.config(text="🔴 SEVERE", fg="red")
 
 def listen():
+    global expected_packet, lost_packets, total_received
+
     while True:
-        data, addr = sock.recvfrom(65535)
+        try:
+            data, addr = sock.recvfrom(65535)
 
-        # 🔹 Decode CSV message
-        message = data.decode()
-        parts = message.split(",")
+            #Decoding the received data and splitting it into parts
+            message = data.decode()
+            print("Received:", message)
 
-        # 🔹 Parse values
-        timestamp = parts[0]
-        simulation_time = float(parts[1])
-        vehicle_count = int(parts[2])
-        north = int(parts[3])
-        south = int(parts[4])
-        east = int(parts[5])
-        west = int(parts[6])
-        waiting_time = float(parts[7])
-        signal_state = parts[8]
+            parts = message.split(",")
 
-        total_queue = north + south + east + west
-        status = analyze(total_queue, waiting_time)
+            # Packet ID
+            packet_id = int(parts[0])
 
-        # 🔹 Update UI
-        vehicle_label.config(text=f"Vehicles: {vehicle_count}")
-        queue_label.config(text=f"Queue Length: {total_queue}")
-        wait_label.config(text=f"Waiting Time: {waiting_time}")
-        signal_label.config(text=f"Signal: {signal_state}")
+            # Packet loss detection
+            if packet_id != expected_packet:
+                lost = packet_id - expected_packet
+                if lost > 0:
+                    lost_packets += lost
+                    print(f"⚠️ Lost {lost} packets")
 
-        if status == "NORMAL":
-            status_label.config(text="🟢 NORMAL", fg="green")
-        elif status == "MODERATE":
-            status_label.config(text="🟡 MODERATE", fg="orange")
-        else:
-            status_label.config(text="🔴 SEVERE", fg="red")
+            expected_packet = packet_id + 1
+            total_received += 1
 
-        print("Received:", message)
+            # Parse data
+            timestamp = parts[1]
+            simulation_time = float(parts[2])
+            vehicle_count = int(parts[3])
+            north = int(parts[4])
+            south = int(parts[5])
+            east = int(parts[6])
+            west = int(parts[7])
+            waiting_time = float(parts[8])
+            signal_state = parts[9]
 
+            total_queue = north + south + east + west
+            status = analyze(total_queue, waiting_time)
+
+            total_packets = total_received + lost_packets
+            loss_rate = (lost_packets / total_packets) * 100 if total_packets > 0 else 0
+
+            # Safe UI update
+            root.after(0, update_ui, vehicle_count, total_queue, waiting_time, signal_state, status, loss_rate)
+
+        except Exception as e:
+            print("❌ ERROR:", e)
+
+# Start listening thread
 thread = threading.Thread(target=listen, daemon=True)
 thread.start()
 
