@@ -23,22 +23,23 @@ TraCI allows a Python program to communicate with a SUMO simulation while it is 
 It is used to read live data such as vehicle count, queue lengths, and signal states.
 
 ## **Folder Structure**
-CN_jackfruit-main/
-├── SUMO_Simulation/
-│ ├── Scenarios/
-│ │ ├── Scenario1_low/
-│ │ ├── Scenario2_med/
-│ │ └── Scenario3_high/
-│ ├── extract_traffic_data.py
-│ ├── scenario1_output.json
-│ ├── scenario2_output.json
-│ └── scenario3_output.json
-├── data_generator/
-├── server/
-├── udp_client/
-├── udp_server_test/
-├── pycache/
-└── README.md
+
+**CN_jackfruit-main/**
+- **SUMO_Simulation/**
+  - **Scenarios/**
+    - Scenario1_low/
+    - Scenario2_med/
+    - Scenario3_high/
+  - extract_traffic_data.py
+  - scenario1_output.json
+  - scenario2_output.json
+  - scenario3_output.json
+- **data_generator/**
+- **server/**
+- **udp_client/**
+- **udp_server_test/**
+- **__pycache__/**
+- README.md
 
 
 ## **Running the Project**
