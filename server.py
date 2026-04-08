@@ -11,6 +11,9 @@ from datetime import datetime
 # This server continuously listens for incoming data, processes it,
 # and updates a Tkinter UI to display traffic conditions in real-time.
 
+expected_seq = 0
+packets_lost = 0
+
 SERVER_IP = "127.0.0.1"
 SERVER_PORT = 9999
 
@@ -44,6 +47,13 @@ wait_label.grid(row=1, column=0, sticky="w", padx=10, pady=4)
 
 signal_label  = tk.Label(stats_frame, text="Signal: -",        font=("Arial", 12), bg="#16213e", fg="#a0c4ff")
 signal_label.grid(row=1, column=1, sticky="w", padx=10)
+
+loss_label = tk.Label(
+    stats_frame, text="Packets Lost: 0",
+    font=("Arial", 12), bg="#16213e", fg="#ff8080"
+)
+loss_label.grid(row=2, column=0, sticky="w", padx=10, pady=4)
+loss_label.config(text=f"Packets Lost: {packets_lost}")
 
 # ── Status Badge ───────────────────────────────────────────────────────
 status_label = tk.Label(
@@ -113,16 +123,27 @@ def listen():
         message = data.decode()
         parts   = message.split(",")
 
+        seq_num = int(parts[0])
         # Parse values
-        timestamp       = parts[0]
-        simulation_time = float(parts[1])
-        vehicle_count   = int(parts[2])
-        north           = int(parts[3])
-        south           = int(parts[4])
-        east            = int(parts[5])
-        west            = int(parts[6])
-        waiting_time    = float(parts[7])
-        signal_state    = parts[8]
+        timestamp       = parts[1]
+        simulation_time = float(parts[2])
+        vehicle_count   = int(parts[3])
+        north           = int(parts[4])
+        south           = int(parts[5])
+        east            = int(parts[6])
+        west            = int(parts[7])
+        waiting_time    = float(parts[8])
+        signal_state    = parts[9]
+
+        global expected_seq, packets_lost
+
+        if seq_num != expected_seq:
+            lost = seq_num - expected_seq
+            if lost > 0:
+                packets_lost += lost
+                print(f"⚠️ Packet loss detected: {lost} packets")
+
+        expected_seq = seq_num + 1
 
         total_queue = north + south + east + west
         status      = analyze(total_queue, waiting_time)
