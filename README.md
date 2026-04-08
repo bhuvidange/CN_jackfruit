@@ -174,12 +174,14 @@ This launches the SUMO simulation and uses TraCI to extract live traffic metrics
 python udp_client.py
 ```
 The client connects to the server and displays the incoming traffic data stream in real time.
+To monitor the traffic of different scenarios, ensure that the exact file is being opened in the udp_client.py code
 
 ---
 
 ## Traffic Scenarios
 
 Three pre-configured traffic scenarios are included to test the system under different load conditions:
+The traffic scenarios created display varying traffic levels for a simple 4 way junction, the simulation and working of the project can be extended to multiple types of junctions (T-junctions, Multi-leg junctions)
 
 | Scenario | Folder | Description |
 |----------|--------|-------------|
